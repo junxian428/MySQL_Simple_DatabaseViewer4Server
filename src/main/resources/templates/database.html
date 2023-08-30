@@ -38,10 +38,16 @@
         var row = $(this).closest("tr");
         var databaseName = selectedDatabaseName;
         var tableName = selectedTableName;
-        var rowId = row.data("row-id");
+        //var rowId = row.data("row-id");
         var inputFields = row.find(".edit-input");
+        var row = $(this).closest("tr");
+        var rowId = row.data("row-id"); // Retrieve the rowId data attribute
+
+
 
         var updatedValues = {};
+
+
         inputFields.each(function(index) {
             var columnName = $(this).parent().parent().find("th").eq(index).text();
             var newValue = $(this).val();
@@ -49,16 +55,20 @@
             $(this).parent().html(newValue);
         });
 
-        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId, values: updatedValues }, function(response) {
+        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId }, function(response) {
             if (response === "Success") {
                 $(".edit-button").show();
                 $(".delete-button").show();
                 $(".save-button").remove();
             } else {
+                $(".edit-button").show();
+                $(".delete-button").show();
                 alert("Error updating row");
                 console.log(response);
             }
         });
+
+   
     });
 
     $(document).on("click", ".edit-button", function() {
@@ -147,7 +157,8 @@ function loadRows(databaseName, tableName) {
         tableHTML += "</tr>";
 
         data.forEach(function(row) {
-            tableHTML += "<tr>";
+            //tableHTML += "<tr>";
+            tableHTML += "<tr data-row-id='" + row.id + "'>"; // Add rowId as a data attribute
             for (var key in row) {
                 tableHTML += "<td>" + row[key] + "</td>";
             }

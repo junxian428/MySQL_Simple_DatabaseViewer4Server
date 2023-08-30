@@ -22,7 +22,11 @@ public class RestDatabase {
     }
 
 
+    public static boolean containsRowId(String inputString) {
+        return inputString.contains("rowId");
+    }
 
+    
         @PostMapping("/edit-row")
     @ResponseBody
     public String editRow(@RequestParam String databaseName, @RequestParam String tableName, @RequestParam String rowId, @RequestParam Map<String, String> values) {
@@ -30,7 +34,13 @@ public class RestDatabase {
         System.out.println("API is called");
         StringBuilder setClause = new StringBuilder();
         for (Map.Entry<String, String> entry : values.entrySet()) {
-            setClause.append(entry.getKey()).append(" = '").append(entry.getValue()).append("', ");
+            System.out.println(entry.getKey());
+            if(!entry.getKey().equals("rowId")){
+                setClause.append(entry.getKey()).append(" = '").append(entry.getValue()).append("', ");
+
+            }
+
+          
         }
         setClause.delete(setClause.length() - 2, setClause.length()); // Remove trailing comma and space
     
