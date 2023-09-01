@@ -1,7 +1,7 @@
 package com.example.springprocessmanagementelasticbeanstalkdeploy.FileUploadController;
 
-import static org.mockito.Answers.values;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -61,15 +61,34 @@ public class RestDatabase {
             String[] keysArray = objectMapper2.readValue(keys, String[].class);
             // Now you have the array of values
             //System.out.println("Array Length: " + valuesArray.length);
-         
+            Map<String, String> keyValueMap = new HashMap<>();
+
             for (int i = 0; i < valuesArray.length; i++) {
-                String key = keysArray[i];
-                String value = valuesArray[i];
-                System.out.println("Key: " + key + ", Value: " + value);
+                //String key = keysArray[i];
+                //String value = keysArray[i];
+                keyValueMap.put(keysArray[i], valuesArray[i]);
             }
-            // Perform the database update using values, databaseName, tableName, and rowId
-            
-            return "Success"; // Return a success response
+            // Perform the database update using values,  databaseName, tableName, and rowId
+                    // Now you have a map with keys and values
+        // You can use this map to construct an update operation
+
+                // Example: Construct an update operation using the map
+                StringBuilder updateSql = new StringBuilder("UPDATE " + databaseName + "." +tableName +" SET ");
+                for (Map.Entry<String, String> entry : keyValueMap.entrySet()) {
+                    updateSql.append(entry.getKey()).append(" = '").append(entry.getValue()).append("', ");
+                }
+                updateSql.delete(updateSql.length() - 2, updateSql.length()); // Remove the trailing comma and space
+                updateSql.append(" WHERE id = " +  rowId);
+
+                System.out.println(updateSql.toString());
+                try {
+                    jdbcTemplate.update(updateSql.toString());
+                    return "Success";
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Error " + e);
+                    return "Error";
+                }
         } else {
             return "Error: Empty jsonUpdate";
         }
