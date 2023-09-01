@@ -52,26 +52,64 @@ li {
     </style>
 </head>
 <body>
-    <h2>Database List</h2>
-    <table style="display:block;">
-        <div th:each="dbName : ${databaseNames}" >
-            <tr>
-            <a href="#" class="database-link" th:data-database-name="${dbName}" th:text="${dbName}"></a>
-            </tr>
+     
+    
+    <div style="width: 100%; display: table;">
+        <div style="display: table-row; height: 100px;">
+            <!---->
+
+            <div style="width: 25%; display: table-cell;">
+
+                <h2>Database List</h2>
+                <table style="display:block;">
+                    <div th:each="dbName : ${databaseNames}" >
+                        <tr>
+                        <a href="#" class="database-link" th:data-database-name="${dbName}" th:text="${dbName}"></a>
+                        </tr>
+                    </div>
+                </table>
+           </div>
+                      <!---->
+
+           <!---->
+           <div style="width: 25%; display: table-cell;">
+
+                    <h3>Table List</h3>
+
+                    
+                    <div id="table-list" style="display:inline-block;"></div>
+
+
+            </div>
+            <!---->
+
+  
+    <div style="width: 50%; display: table-cell;">
+
+            <h3>Table Row</h3>
+            <form action="/search/{databaseName}/{tableName}" method="get">
+                <input type="text" name="query" placeholder="Search...">
+                <button type="submit">Search</button>
+            </form>
+            
+            <div th:each="result : ${searchResults}">
+                <p th:text="${result}"></p>
+            </div>
+            
+            <div id="row-table"></div>
+            
+        
         </div>
-    </table>
-    
-    <h3>Table List</h3>
-    
-    <div id="table-list" style="display:inline-block;"></div>
+        <!---->
 
+        </div>
+    </div>
 
-    <h3>Table Row</h3>
-    <div id="row-table"></div>
 </body>
 <script>
             var selectedDatabaseName = ""; // Store the selected databaseName
             var selectedTableName = ""; // Store the selected databaseName
+            var jsonUpdate = [];
 
         // Prepare the data for JSON
         var jsonData = [];
@@ -89,6 +127,8 @@ li {
         var databaseName = $(this).data("database-name");
         var tableName = $(this).data("table-name");
         selectedTableName = $(this).data("table-name");
+        // Update the form action URL
+        $('#search-form').attr('action', '/search/' + databaseName + '/' + tableName);
         loadRows(databaseName, tableName);
     });
 
@@ -100,11 +140,10 @@ li {
         var inputFields = row.find(".edit-input");
         var row = $(this).closest("tr");
         var rowId = row.data("row-id"); // Retrieve the rowId data attribute
-        console.log(jsonData);
-
+        //console.log(jsonData);
+        jsonUpdate = [];
 
         var updatedValues = {};
-
 
         inputFields.each(function(index) {
             
@@ -112,14 +151,16 @@ li {
             var newValue = $(this).val();
             //console.log(updatedValues[columnName]);
             updatedValues[columnName] = newValue;
+            jsonUpdate.push(updatedValues[columnName]);
             //$(this).parent().text(newValue);
             if( updatedValues[columnName] != "Edit Delete"){
                 $(this).parent().html(newValue);
 
             }
         });
+        console.log(jsonUpdate);
 
-        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId ,         updatedValues: updatedValues}, function(response) {
+        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId ,         updatedValues: jsonUpdate}, function(response) {
             if (response === "Success") {
                 $(".edit-button").show();
                 $(".delete-button").show();

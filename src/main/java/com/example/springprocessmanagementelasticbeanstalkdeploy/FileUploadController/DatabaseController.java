@@ -34,9 +34,20 @@ public class DatabaseController {
     @GetMapping("/rows/{databaseName}/{tableName}")
     @ResponseBody
     public List<Map<String, Object>> getTableRows(
-            @PathVariable String databaseName, @PathVariable String tableName) {
-        return jdbcTemplate.queryForList("SELECT * FROM " + databaseName + "." + tableName);
+        @PathVariable String databaseName, @PathVariable String tableName) {
+        return jdbcTemplate.queryForList("SELECT * FROM " + databaseName + "." + tableName + " ORDER BY id DESC LIMIT 50");
     }
 
+
+    @GetMapping("/search")
+    public String search(  @PathVariable String databaseName, @PathVariable String tableName,@RequestParam String query, Model model) {
+        // Perform search operation using jdbcTemplate
+        String sqlQuery = "SELECT * FROM "+ databaseName + "." + tableName + " WHERE column_name LIKE ?";
+        List<Map<String, Object>> searchResults = jdbcTemplate.queryForList(sqlQuery, "%" + query + "%", String.class);
+
+        model.addAttribute("searchResults", searchResults);
+        return "database"; // Return the name of your Thymeleaf template
+    }
+    
 
 }

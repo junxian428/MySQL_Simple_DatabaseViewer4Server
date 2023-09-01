@@ -29,26 +29,22 @@ public class RestDatabase {
     
         @PostMapping("/edit-row")
     @ResponseBody
-    public String editRow(@RequestParam String databaseName, @RequestParam String tableName, @RequestParam String rowId, @RequestParam Map<String, String> values) {
+    public String editRow(@RequestParam String databaseName, @RequestParam String tableName, @RequestParam String rowId, @RequestParam String[] values) {
         // Create the SET clause for the UPDATE statement
         System.out.println("API is called");
-        StringBuilder setClause = new StringBuilder();
-        for (Map.Entry<String, String> entry : values.entrySet()) {
-            System.out.println(entry.getKey());
-            if(!entry.getKey().equals("rowId") || !entry.getKey().equals("databaseName") || !entry.getKey().equals("tableName") ){
-                setClause.append(entry.getKey()).append(" = '").append(entry.getValue()).append("', ");
 
-            }
-
-          
+        //System.out.println(values);
+        for (int i = 0; i < values.length; i++) {
+            System.out.println("Element at index " + i + ": " + values[i]);
         }
-        setClause.delete(setClause.length() - 2, setClause.length()); // Remove trailing comma and space
+        //System.out.println(setClause);
+        //setClause.delete(setClause.length() - 2, setClause.length()); // Remove trailing comma and space
     
         // Create the WHERE clause using rowId (assuming it's a primary key)
         String whereClause = "id = " + rowId; // Replace "id" with your actual primary key column name
     
         // Construct the complete SQL update statement
-        String updateSql = "UPDATE " + databaseName + "." + tableName + " SET " + setClause + " WHERE " + whereClause;
+        String updateSql = "UPDATE " + databaseName + "." + tableName + " SET " + values + " WHERE " + whereClause;
     
         try {
             jdbcTemplate.update(updateSql);
