@@ -52,12 +52,12 @@ li {
     </style>
 </head>
 <body>
-    
-    <div style="width: 100%; display: table;">
-        <div style="display: table-row; height: 100px;">
+    <h2><u>Thymeleaef Java Spring DBMS</u></h2>
+    <div style="width: 100%; display: table; border: 1px solid black">
+        <div style="display: table-row; height: 100px; border: 1px solid black">
             <!---->
 
-            <div style="width: 25%; display: table-cell;">
+            <div style="width: 25%; display: table-cell; border: 1px solid black">
 
                 <h2>Database List</h2>
                 <table style="display:block;">
@@ -71,9 +71,13 @@ li {
                       <!---->
 
            <!---->
-           <div style="width: 25%; display: table-cell;">
+           <div style="width: 25%; display: table-cell; border: 1px solid black">
 
                     <h3>Table List</h3>
+                    <button style="font-size: 20px;">Create </button>
+                    <button style="font-size: 20px;">Update </button>
+                    <button style="font-size: 20px;">Delete</button>
+                    <br>
 
                     
                     <div id="table-list" style="display:inline-block;"></div>
@@ -83,12 +87,12 @@ li {
             <!---->
 
   
-    <div style="width: 50%; display: table-cell;">
+    <div style="width: 50%; display: table-cell; border: 1px solid black">
 
             <h3>Table Row</h3>
             <form action="/search/{databaseName}/{tableName}" method="get">
                 <input type="text" name="query" placeholder="Search...">
-                <button type="submit">Search</button>
+                <button type="submit" style="font-size:20px; height: 20px;">Search</button>
             </form>
             
             <div th:each="result : ${searchResults}">
