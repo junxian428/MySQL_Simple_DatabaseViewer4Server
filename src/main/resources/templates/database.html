@@ -18,6 +18,9 @@
             var selectedDatabaseName = ""; // Store the selected databaseName
             var selectedTableName = ""; // Store the selected databaseName
 
+        // Prepare the data for JSON
+        var jsonData = [];
+
 
     $(document).ready(function() {
     $(".database-link").on("click", function() {
@@ -42,7 +45,7 @@
         var inputFields = row.find(".edit-input");
         var row = $(this).closest("tr");
         var rowId = row.data("row-id"); // Retrieve the rowId data attribute
-
+        console.log(jsonData);
 
 
         var updatedValues = {};
@@ -55,7 +58,7 @@
             $(this).parent().html(newValue);
         });
 
-        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId }, function(response) {
+        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId ,         updatedValues: updatedValues}, function(response) {
             if (response === "Success") {
                 $(".edit-button").show();
                 $(".delete-button").show();
@@ -144,15 +147,19 @@ function loadTables(databaseName) {
 
 function loadRows(databaseName, tableName) {
     $.get("/rows/" + databaseName + "/" + tableName, function(data) {
+        jsonData = [];
         var rowTable = $("#row-table");
         rowTable.empty();
 
         // Build the table rows and cells based on data
         var tableHTML = "<table>";
         tableHTML += "<tr>";
-        for (var key in data[0]) {
+            var keys = Object.keys(data[0]); // Get all keys from the first row
+        keys.forEach(function(key) {
             tableHTML += "<th>" + key + "</th>";
-        }
+            jsonData[key] = []; // Initialize an array for each key
+        });
+
         tableHTML += "<th>Actions</th>"; // Add column for buttons
         tableHTML += "</tr>";
 
@@ -161,7 +168,10 @@ function loadRows(databaseName, tableName) {
             tableHTML += "<tr data-row-id='" + row.id + "'>"; // Add rowId as a data attribute
             for (var key in row) {
                 tableHTML += "<td>" + row[key] + "</td>";
+                jsonData[key].push(row[key]); // Add cell value to corresponding key's array
+
             }
+
             tableHTML += "<td><button class='edit-button'>Edit</button> <button class='delete-button'>Delete</button></td>";
             tableHTML += "</tr>";
         });

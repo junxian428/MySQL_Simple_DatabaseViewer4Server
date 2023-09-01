@@ -35,7 +35,7 @@ public class RestDatabase {
         StringBuilder setClause = new StringBuilder();
         for (Map.Entry<String, String> entry : values.entrySet()) {
             System.out.println(entry.getKey());
-            if(!entry.getKey().equals("rowId")){
+            if(!entry.getKey().equals("rowId") || !entry.getKey().equals("databaseName") || !entry.getKey().equals("tableName") ){
                 setClause.append(entry.getKey()).append(" = '").append(entry.getValue()).append("', ");
 
             }
