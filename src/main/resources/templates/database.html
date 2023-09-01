@@ -52,10 +52,16 @@
 
 
         inputFields.each(function(index) {
+            
             var columnName = $(this).parent().parent().find("th").eq(index).text();
             var newValue = $(this).val();
+            //console.log(updatedValues[columnName]);
             updatedValues[columnName] = newValue;
-            $(this).parent().html(newValue);
+            //$(this).parent().text(newValue);
+            if( updatedValues[columnName] != "Edit Delete"){
+                $(this).parent().html(newValue);
+
+            }
         });
 
         $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId ,         updatedValues: updatedValues}, function(response) {
@@ -63,9 +69,15 @@
                 $(".edit-button").show();
                 $(".delete-button").show();
                 $(".save-button").remove();
+
+                // Restore any modified CSS properties
+                $(".edit-button").css('property', 'initial'); // Replace 'property' with the actual CSS property you want to reset
+                $(".save-button").css('property', 'initial'); // Replace 'property' with the actual CSS property you want to reset
+
             } else {
                 $(".edit-button").show();
                 $(".delete-button").show();
+                $(".save-button").remove();
                 alert("Error updating row");
                 console.log(response);
             }
@@ -86,11 +98,17 @@
 
         // Convert cells to input fields for editing
         cells.each(function() {
+            console.log(cellValue);
             var cellValue = $(this).text();
-            $(this).html("<input type='text' class='edit-input' value='" + cellValue + "'>");
+            if(cellValue != "Edit Delete"){
+                $(this).html("<input type='text' class='edit-input' value='" + cellValue + "'>");
+
+            }
         });
 
         // Append Save button
+        // Show edit and delete buttons
+
         var saveButton = $("<button class='save-button'>Save</button>");
         row.append(saveButton);
     });
