@@ -52,7 +52,6 @@ li {
     </style>
 </head>
 <body>
-     
     
     <div style="width: 100%; display: table;">
         <div style="display: table-row; height: 100px;">
@@ -113,6 +112,8 @@ li {
 
         // Prepare the data for JSON
         var jsonData = [];
+        var keyJSON = [];
+        //var columnNameJSON = [];
 
 
     $(document).ready(function() {
@@ -144,12 +145,15 @@ li {
         jsonUpdate = [];
 
         var updatedValues = {};
+        //columnNameJSON = [];
 
         inputFields.each(function(index) {
-            
+            //console.log(columnName);
             var columnName = $(this).parent().parent().find("th").eq(index).text();
             var newValue = $(this).val();
             //console.log(updatedValues[columnName]);
+            //columnNameJSON.push($(this).parent().parent().find("th").eq(index).text());            
+            //
             updatedValues[columnName] = newValue;
             jsonUpdate.push(updatedValues[columnName]);
             //$(this).parent().text(newValue);
@@ -159,8 +163,10 @@ li {
             }
         });
         console.log(jsonUpdate);
+        console.log(keyJSON);
+        //console.log(columnNameJSON);
 
-        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId ,         updatedValues: jsonUpdate}, function(response) {
+        $.post("/edit-row", { databaseName: databaseName, tableName: tableName, rowId: rowId , values: JSON.stringify(jsonUpdate), keys: JSON.stringify(keyJSON) }, function(response) {
             if (response === "Success") {
                 $(".edit-button").show();
                 $(".delete-button").show();
@@ -278,19 +284,29 @@ function loadRows(databaseName, tableName) {
 
         tableHTML += "<th>Actions</th>"; // Add column for buttons
         tableHTML += "</tr>";
+        keyJSON = [];
+                var keysExtracted = false; // Flag to track if keys have been extracted
 
         data.forEach(function(row) {
-            //tableHTML += "<tr>";
             tableHTML += "<tr data-row-id='" + row.id + "'>"; // Add rowId as a data attribute
-            for (var key in row) {
+
+            if (!keysExtracted) {
+                for (var key in row) {
+                    keyJSON.push(key); // Add the key to the keyJSON array
+                }
+                keysExtracted = true; // Set the flag to true, so this block won't execute again
+            }
+
+            for (var i = 0; i < keyJSON.length; i++) {
+                var key = keyJSON[i];
                 tableHTML += "<td>" + row[key] + "</td>";
                 jsonData[key].push(row[key]); // Add cell value to corresponding key's array
-
             }
 
             tableHTML += "<td><button class='edit-button' style='background-color: #00416A; font-size:20px; color:white;'>Edit</button> <button class='delete-button' style=' color:white;background-color: red; font-size:20px;'>Delete</button></td>";
             tableHTML += "</tr>";
         });
+
 
         tableHTML += "</table>";
         rowTable.html(tableHTML);
