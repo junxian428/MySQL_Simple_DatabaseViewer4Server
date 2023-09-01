@@ -3,15 +3,70 @@
 <head>
     <title>Database Explorer</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Style for the main content area */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Style for the header */
+h2 {
+    color: #333;
+}
+
+/* Style for the database list */
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+/* Style for database links */
+.database-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.database-link:hover {
+    text-decoration: underline;
+}
+
+/* Style for table list and row table */
+#table-list, #row-table {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f5f5f5;
+}
+/* */
+
+
+
+/* */
+    </style>
 </head>
 <body>
     <h2>Database List</h2>
-    <ul>
-        <li th:each="dbName : ${databaseNames}">
+    <table style="display:block;">
+        <div th:each="dbName : ${databaseNames}" >
+            <tr>
             <a href="#" class="database-link" th:data-database-name="${dbName}" th:text="${dbName}"></a>
-        </li>
-    </ul>
-    <div id="table-list"></div>
+            </tr>
+        </div>
+    </table>
+    
+    <h3>Table List</h3>
+    
+    <div id="table-list" style="display:inline-block;"></div>
+
+
+    <h3>Table Row</h3>
     <div id="row-table"></div>
 </body>
 <script>
@@ -109,7 +164,7 @@
         // Append Save button
         // Show edit and delete buttons
 
-        var saveButton = $("<button class='save-button'>Save</button>");
+        var saveButton = $("<button class='save-button' style='background-color: #228B22; font-size:20px; color:white;'>Save</button>");
         row.append(saveButton);
     });
 
@@ -154,6 +209,7 @@ $(document).ready(function() {
 });
 
 function loadTables(databaseName) {
+    $('#row-table').hide();
     $.get("/tables/" + databaseName, function(data) {
         var tableList = $("#table-list");
         tableList.empty();
@@ -164,6 +220,7 @@ function loadTables(databaseName) {
 }
 
 function loadRows(databaseName, tableName) {
+    $('#row-table').show();
     $.get("/rows/" + databaseName + "/" + tableName, function(data) {
         jsonData = [];
         var rowTable = $("#row-table");
@@ -190,7 +247,7 @@ function loadRows(databaseName, tableName) {
 
             }
 
-            tableHTML += "<td><button class='edit-button'>Edit</button> <button class='delete-button'>Delete</button></td>";
+            tableHTML += "<td><button class='edit-button' style='background-color: #00416A; font-size:20px; color:white;'>Edit</button> <button class='delete-button' style=' color:white;background-color: red; font-size:20px;'>Delete</button></td>";
             tableHTML += "</tr>";
         });
 
